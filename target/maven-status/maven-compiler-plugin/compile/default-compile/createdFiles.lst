@@ -1,0 +1,6 @@
+self\Controller.class
+self\Main.class
+crawlerDev\main.class
+self\MyCrawler.class
+self\CrawlStat.class
+com\crawl\CrawlerServlet.class
