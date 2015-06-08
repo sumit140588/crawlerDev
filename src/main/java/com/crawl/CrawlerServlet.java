@@ -10,10 +10,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.bouncycastle.ocsp.Req;
-
-import com.sun.org.apache.regexp.internal.recompile;
-
 import self.Controller;
 import self.MyCrawler;
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
@@ -37,7 +33,7 @@ public class CrawlerServlet extends HttpServlet {
 		if(null!=url_param && !url_param.isEmpty()){
 		String[] urls=url_param.split(",");
 	    Matcher m = p.matcher("your url here"); 
-		System.out.println(pReq.getParameter("url"));
+		System.out.println(pReq.getParameter("url "));
 		try {
 		List<String> indexURLs=	new  Controller().main(urls);
 		if(null!=indexURLs && !indexURLs.isEmpty()){

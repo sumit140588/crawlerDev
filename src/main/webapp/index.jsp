@@ -11,7 +11,7 @@
 hi
 <form action="CrawlerServlet">
 URLS:
-<input type="text" name="url" value="http://www.google.com" placeholder="urls comma seprated" />
+<input type="text" name="url" value="http://www.google.com" />
 <br/><input type="submit" value="gotoindex">
 
 URLs:<br/> <%
