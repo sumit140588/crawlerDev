@@ -1,1 +1,1 @@
-web: java -jar lib/webapp-runner.jar target/*.war -p 19000
+web: java -jar lib/webapp-runner.jar target/*.war
