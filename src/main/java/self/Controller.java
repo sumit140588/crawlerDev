@@ -13,7 +13,7 @@ import edu.uci.ics.crawler4j.url.WebURL;
 public class Controller {
 	public List<String> main(String[] args) throws Exception {
 		String crawlStorageFolder = "data/crawl/root";
-		int numberOfCrawlers = 3;
+		int numberOfCrawlers = 10;
 List<String> indexURLS;
 		CrawlConfig config = new CrawlConfig();
 		config.setCrawlStorageFolder(crawlStorageFolder);
