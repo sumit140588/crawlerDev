@@ -1,1 +1,1 @@
-web: java -jar lib/webapp-runner.jar --expand-war target/*.war
+web: java -jar lib/webapp-runner.jar --expand-war --port 19787 target/*.war
