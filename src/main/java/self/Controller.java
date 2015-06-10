@@ -10,7 +10,47 @@ import edu.uci.ics.crawler4j.robotstxt.RobotstxtConfig;
 import edu.uci.ics.crawler4j.robotstxt.RobotstxtServer;
 import edu.uci.ics.crawler4j.url.WebURL;
 
-public class Controller {
+public class Controller extends Thread {
+	String[] urls;
+	volatile boolean isRunning;
+	
+	public boolean isRunning() {
+		return isRunning;
+	}
+
+	public void setRunning(boolean isRunning) {
+		this.isRunning = isRunning;
+	}
+
+	List<String> indexUrls;
+	public void run() {
+		try {
+			isRunning=true;
+			indexUrls=main(urls);
+			
+		} catch (Exception e) {
+			
+		}finally{
+		isRunning=false;
+		}
+	}
+	
+	public String[] getUrls() {
+		return urls;
+	}
+
+	public void setUrls(String[] urls) {
+		this.urls = urls;
+	}
+
+	public List<String> getIndexUrls() {
+		return indexUrls;
+	}
+
+	public void setIndexUrls(List<String> indexUrls) {
+		this.indexUrls = indexUrls;
+	}
+
 	public List<String> main(String[] args) throws Exception {
 		String crawlStorageFolder = "data/crawl/root";
 		int numberOfCrawlers = 10;
@@ -18,7 +58,7 @@ List<String> indexURLS;
 		CrawlConfig config = new CrawlConfig();
 		config.setCrawlStorageFolder(crawlStorageFolder);
 		config.setMaxDepthOfCrawling(1);
-		config.setMaxPagesToFetch(10);
+		config.setMaxPagesToFetch(50);
 		config.setPolitenessDelay(200);
 		config.setProxyPort(0);
 		config.setProxyHost(null);
