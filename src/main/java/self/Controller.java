@@ -13,12 +13,12 @@ import edu.uci.ics.crawler4j.url.WebURL;
 public class Controller {
 	public List<String> main(String[] args) throws Exception {
 		String crawlStorageFolder = "data/crawl/root";
-		int numberOfCrawlers = 10;
+		int numberOfCrawlers = 3;
 List<String> indexURLS;
 		CrawlConfig config = new CrawlConfig();
 		config.setCrawlStorageFolder(crawlStorageFolder);
 		config.setMaxDepthOfCrawling(1);
-		config.setMaxPagesToFetch(20);
+		config.setMaxPagesToFetch(10);
 		config.setPolitenessDelay(200);
 		config.setProxyPort(0);
 		config.setProxyHost(null);
