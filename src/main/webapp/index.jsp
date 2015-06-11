@@ -12,7 +12,7 @@
 	<form action="CrawlerServlet">
 		URLS: <input type="text" name="url" value="http://www.ics.uci.edu/~lopes/" />
 		<br />
-		<input type="submit" value="gotoindex"> URLs:<br />
+		<input type="submit" value="gotoindex"> <br/>URLs:<br />
 		<%
 			List<String> urls = (List<String>) request
 					.getAttribute("indexURLs");
