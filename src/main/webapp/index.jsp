@@ -17,7 +17,7 @@ URLS:
 URLs:<br/> <%
 
 List<String> urls=(List<String>)request.getAttribute("indexURLs");
-long toplevelPage=(Long)request.getAttribute("topLevelPage");
+Long toplevelPage=(Long)request.getAttribute("topLevelPage");
 
 
  if(null!=urls){
