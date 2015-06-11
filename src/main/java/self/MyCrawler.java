@@ -56,7 +56,7 @@ public class MyCrawler extends WebCrawler {
 		// )
 		// System.out.println((!FILTERS.matcher(href).matches()
 		// )+" href " + href);
-		return !FILTERS.matcher(href).matches()&& pUrl.getDomain().contains(url_param);
+		return !FILTERS.matcher(href).matches()&& url_param.contains(pUrl.getDomain());
 	}
 
 	@Override
