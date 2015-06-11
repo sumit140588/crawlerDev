@@ -14,6 +14,22 @@ public class Controller extends Thread {
 	String[] urls;
 	volatile boolean isRunning;
 	
+	public long getToplevelPages() {
+		return toplevelPages;
+	}
+
+	public void setToplevelPages(long toplevelPages) {
+		this.toplevelPages = toplevelPages;
+	}
+
+	public long getTotalNumberofpages() {
+		return totalNumberofpages;
+	}
+
+	public void setTotalNumberofpages(long totalNumberofpages) {
+		this.totalNumberofpages = totalNumberofpages;
+	}
+
 	public boolean isRunning() {
 		return isRunning;
 	}
@@ -58,7 +74,7 @@ List<String> indexURLS;
 		CrawlConfig config = new CrawlConfig();
 		config.setCrawlStorageFolder(crawlStorageFolder);
 		config.setMaxDepthOfCrawling(5);
-		config.setMaxPagesToFetch(1000);
+		config.setMaxPagesToFetch(-1);
 		config.setPolitenessDelay(200);
 		config.setProxyPort(0);
 		config.setProxyHost(null);
@@ -87,7 +103,7 @@ List<String> indexURLS;
 		 * will reach the line after this only when crawling is finished.
 		 */
 		MyCrawler myCrawler = new MyCrawler();
-
+		myCrawler.url_param=args[0];
 		controller.start(myCrawler.getClass(), numberOfCrawlers);
 		System.out.println("Hello");
 		List<Object> crawlersLocalData = controller.getCrawlersLocalData();
@@ -110,15 +126,30 @@ List<String> indexURLS;
 		for (Object c : crawlersLocalData) {
 			if (null != c) {
 				CrawlStat temp = (CrawlStat) c;
-
+				
 				if (null != temp.getLinks() && !temp.getLinks().isEmpty())
 					for (WebURL w : temp.getLinks()) {
 						//System.out.println("domain " + w.getDomain() + " "
 							//	+ w.getURL());
 						indexURLS.add(w.getURL());
+						//if(w.get)
+						//toplevelPages
+						System.out.println("URL-"+w.getURL());
+						System.out.println("docid-"+w.getDocid());
+						System.out.println("Domain-"+w.getDomain());
+						System.out.println("subdomain"+w.getSubDomain());
+						System.out.println("getDepth-"+w.getDepth());
+						System.out.println("parentdocid-"+w.getParentDocid());
+						System.out.println("parentURL-"+w.getParentUrl());
+						if(w.getDepth()==1){
+							toplevelPages++;
+						}
+						
+						
 					}
 			}
 		}
 		return indexURLS;
 	}
+	long toplevelPages,totalNumberofpages;
 }

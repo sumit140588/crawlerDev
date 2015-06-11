@@ -48,6 +48,7 @@ public class CrawlerServlet extends HttpServlet {
 				System.out.println("If part controler");
 				c=new Controller();
 				c.setUrls(urls);
+				
 			}else{
 				System.out.println("else part controler");
 				c=Controller_param;
@@ -66,7 +67,7 @@ public class CrawlerServlet extends HttpServlet {
 			if(!c.isRunning() && (null==run||run.isEmpty())){
 				//t.setDaemon(true);
 				
-				System.out.println("aaya");
+				//System.out.println("aaya");
 				pReq.getSession().setAttribute("contolerObject",c);
 				pReq.getSession().setAttribute("thread",t);
 				pReq.getSession().setAttribute("run", "end");
@@ -81,12 +82,14 @@ public class CrawlerServlet extends HttpServlet {
 					pResp.setIntHeader("Refresh", 5);
 				}else{
 				indexURLs=c.getIndexUrls();
+				pReq.setAttribute("topLevelPage",c.getToplevelPages());
 				}
 				//pReq.setAttribute("run", "");
 			}
 		if(null!=indexURLs && !indexURLs.isEmpty()){
 			System.out.println("index url count "+indexURLs.size());
 			pReq.setAttribute("indexURLs", indexURLs);
+			
 		}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

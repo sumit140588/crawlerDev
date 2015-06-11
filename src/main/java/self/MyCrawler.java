@@ -23,7 +23,7 @@ public class MyCrawler extends WebCrawler {
 	// private final static Pattern IMAGE_FILTERS =
 	// Pattern.compile(".*(|png|tiff?|mid|mp2|mp3|mp4))$");
 	CrawlStat cCrawlStat;
-
+	String url_param;
 	public MyCrawler() {
 
 		cCrawlStat = new CrawlStat();
@@ -56,7 +56,7 @@ public class MyCrawler extends WebCrawler {
 		// )
 		// System.out.println((!FILTERS.matcher(href).matches()
 		// )+" href " + href);
-		return !FILTERS.matcher(href).matches();
+		return !FILTERS.matcher(href).matches()&& pUrl.getDomain().contains(url_param);
 	}
 
 	@Override

@@ -17,7 +17,12 @@ URLS:
 URLs:<br/> <%
 
 List<String> urls=(List<String>)request.getAttribute("indexURLs");
+long toplevelPage=(Long)request.getAttribute("topLevelPage");
+
+
  if(null!=urls){
+	 out.println("Number of pages at top level Hierarchy--"+toplevelPage);
+	 out.println("Total Number of pages in Hierarchy--"+urls.size());
 	 for(String url:urls)
 	 out.println(url+"<br/>");
 	 out.flush();
