@@ -5,10 +5,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import javax.servlet.annotation.WebInitParam;
+
 import org.apache.log4j.Logger;
 
 import edu.uci.ics.crawler4j.crawler.Page;
 import edu.uci.ics.crawler4j.crawler.WebCrawler;
+import edu.uci.ics.crawler4j.frontier.Frontier;
 import edu.uci.ics.crawler4j.parser.HtmlParseData;
 import edu.uci.ics.crawler4j.url.WebURL;
 
@@ -24,10 +27,11 @@ public class MyCrawler extends WebCrawler {
 	// Pattern.compile(".*(|png|tiff?|mid|mp2|mp3|mp4))$");
 	CrawlStat cCrawlStat;
 	String url_param;
+
 	public MyCrawler() {
 
 		cCrawlStat = new CrawlStat();
-		 cCrawlStat.setLinks(new ArrayList<WebURL>());
+		cCrawlStat.setLinks(new ArrayList<WebURL>());
 	}
 
 	/**
@@ -56,7 +60,14 @@ public class MyCrawler extends WebCrawler {
 		// )
 		// System.out.println((!FILTERS.matcher(href).matches()
 		// )+" href " + href);
-		return !FILTERS.matcher(href).matches()&& url_param.contains(pUrl.getDomain());
+		 SelfCrawlController controller=(SelfCrawlController)
+		 getMyController();
+
+		 System.out.println("check instance "+(getMyController() instanceof SelfCrawlController)+"  -"+pUrl.getDomain()+"should visit"+
+		 url_param+"  reqURL "+controller.getReqURL());
+		System.out.println(controller.getReqURL().contains(pUrl.getDomain()));
+		return (!FILTERS.matcher(href).matches() && controller.getReqURL().contains(pUrl.getDomain())) ;
+
 	}
 
 	@Override
@@ -83,7 +94,7 @@ public class MyCrawler extends WebCrawler {
 			indexableData = cCrawlStat.getIndexableData(); // =
 															// htmlParseData.getOutgoingUrls();
 		} else {
-			//links = new ArrayList<WebURL>();
+			// links = new ArrayList<WebURL>();
 		}
 		links.add(page.getWebURL());
 

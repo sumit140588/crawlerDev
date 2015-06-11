@@ -10,7 +10,7 @@
 <body>
 	hi
 	<form action="CrawlerServlet">
-		URLS: <input type="text" name="url" value="http://www.google.com" />
+		URLS: <input type="text" name="url" value="http://www.ics.uci.edu/~lopes/" />
 		<br />
 		<input type="submit" value="gotoindex"> URLs:<br />
 		<%

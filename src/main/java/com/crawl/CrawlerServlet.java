@@ -11,6 +11,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.PropertyConfigurator;
+
 import self.Controller;
 import self.MyCrawler;
 import ucar.nc2.ft.fmrc.TimeInventory;
@@ -28,79 +30,96 @@ public class CrawlerServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	@Override
+	public void init() throws ServletException {
+		String prefix =  getServletContext().getRealPath("/");
+	    String file = getInitParameter("log4j-init-file");
+	    // if the log4j-init-file is not set, then no point in trying
+	    if(file != null) {
+	      PropertyConfigurator.configure(prefix+file);
+	    }
+		super.init();
+	}
+	@Override
 	protected void doGet(HttpServletRequest pReq, HttpServletResponse pResp)
 			throws ServletException, IOException {
-		Pattern p = Pattern.compile("(@)?(href=')?(HREF=')?(HREF=\")?(href=\")?(http://)?[a-zA-Z_0-9\\-]+(\\.\\w[a-zA-Z_0-9\\-]+)+(/[#&\\n\\-=?\\+\\%/\\.\\w]+)?");  
-		String url_param=pReq.getParameter("url");
-		if(null!=url_param && !url_param.isEmpty()){
-		String[] urls=url_param.split(",");
-	    Matcher m = p.matcher("your url here");
-	   // System.out.println("HELOOOOOOOOOOOOOOOOOOOOOO");
-		System.out.println(url_param+" abc "+pReq.getParameter("url"));
-		long timeinmilli=Calendar.getInstance().getTimeInMillis();
-		String run=(String) pReq.getSession().getAttribute("run");
-		try {
-			List<String> indexURLs=null;
-			
-			Controller c;
-			Controller Controller_param=(Controller) pReq.getSession().getAttribute("contolerObject");
-			if(null==Controller_param){
-				System.out.println("If part controler");
-				c=new Controller();
-				c.setUrls(urls);
-				
-			}else{
-				System.out.println("else part controler");
-				c=Controller_param;
-			}	
-			
-			Thread t;
-			Thread Thread_param=(Thread) pReq.getSession().getAttribute("contolerObject");
-			if(null==Thread_param){
-				t=new Thread(c, "controlerThread");	
-			}else{
-				t=Thread_param;
-			}
-			
-			System.out.println("run value "+run);
-			System.out.println(c.isRunning());
-			if(!c.isRunning() && (null==run||run.isEmpty())){
-				//t.setDaemon(true);
-				
-				//System.out.println("aaya");
-				pReq.getSession().setAttribute("contolerObject",c);
-				pReq.getSession().setAttribute("thread",t);
-				pReq.getSession().setAttribute("run", "end");
-				pResp.setIntHeader("Refresh", 5);
-				
-				t.start();
-				System.out.println("check "+c.isRunning());
-				//pResp.getWriter().append("<meta http-equiv=\"refresh\" content=\"5; URL=#\">");
-			}else{
-				System.out.println("else part");
-				if(c.isRunning()){
-					pResp.setIntHeader("Refresh", 5);
-				}else{
-				indexURLs=c.getIndexUrls();
-				pReq.setAttribute("topLevelPage",c.getToplevelPages());
+		Pattern p = Pattern
+				.compile("(@)?(href=')?(HREF=')?(HREF=\")?(href=\")?(http://)?[a-zA-Z_0-9\\-]+(\\.\\w[a-zA-Z_0-9\\-]+)+(/[#&\\n\\-=?\\+\\%/\\.\\w]+)?");
+		String url_param = pReq.getParameter("url");
+		if (null != url_param && !url_param.isEmpty()) {
+			String[] urls = url_param.split(",");
+			Matcher m = p.matcher("your url here");
+			// System.out.println("HELOOOOOOOOOOOOOOOOOOOOOO");
+			System.out.println(url_param + " abc " + pReq.getParameter("url"));
+			long timeinmilli = Calendar.getInstance().getTimeInMillis();
+			String run = (String) pReq.getSession().getAttribute("run");
+			System.out.println("RUn VALUE-" + run);
+			try {
+				List<String> indexURLs = null;
+
+				Controller c;
+				Controller Controller_param = (Controller) pReq.getSession()
+						.getAttribute("contolerObject");
+				if (null == Controller_param) {
+					System.out.println("If part controler");
+					c = new Controller();
+					c.setUrls(urls);
+
+				} else {
+					System.out.println("else part controler");
+					c = Controller_param;
 				}
-				//pReq.setAttribute("run", "");
+
+				Thread t;
+				Thread Thread_param = (Thread) pReq.getSession().getAttribute(
+						"contolerObject");
+				if (null == Thread_param) {
+					t = new Thread(c, "controlerThread");
+				} else {
+					t = Thread_param;
+				}
+
+				System.out.println("run value " + run);
+				System.out.println(c.isRunning());
+				if (!c.isRunning() && (null == run || run.isEmpty())) {
+					// t.setDaemon(true);
+
+					 System.out.println("aaya");
+					pReq.getSession().setAttribute("contolerObject", c);
+					pReq.getSession().setAttribute("thread", t);
+					pReq.getSession().setAttribute("run", "end");
+					pResp.setIntHeader("Refresh", 5);
+
+					t.start();
+					System.out.println("check " + c.isRunning());
+					// pResp.getWriter().append("<meta http-equiv=\"refresh\" content=\"5; URL=#\">");
+				} else {
+					System.out.println("else part");
+					if (c.isRunning()) {
+						pResp.setIntHeader("Refresh", 5);
+					} else {
+						System.out.println("Null Check "
+								+ (c.getIndexUrls().size()));
+						indexURLs = c.getIndexUrls();
+						pReq.setAttribute("topLevelPage", c.getToplevelPages());
+						pReq.getSession().setAttribute("run", null);
+					}
+
+				}
+				if (null != indexURLs && !indexURLs.isEmpty()) {
+					System.out.println("index url count " + indexURLs.size());
+					pReq.setAttribute("indexURLs", indexURLs);
+
+				}
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-		if(null!=indexURLs && !indexURLs.isEmpty()){
-			System.out.println("index url count "+indexURLs.size());
-			pReq.setAttribute("indexURLs", indexURLs);
 			
-		}
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		System.out.println("total time "+(Calendar.getInstance().getTimeInMillis()-timeinmilli)/1000);
-		pReq.setAttribute("a", pReq.getParameter("url"));
-		//pReq.("index.jsp").forward(pReq, pResp);
-		}//pReq.getRequestDispatcher("index.jsp").forward(pReq, pResp);
-		pReq.getRequestDispatcher("/index.jsp").forward(pReq, pResp);
+			pReq.setAttribute("a", pReq.getParameter("url"));
 		
+		}
+		pReq.getRequestDispatcher("/index.jsp").forward(pReq, pResp);
+
 		return;
 	}
 

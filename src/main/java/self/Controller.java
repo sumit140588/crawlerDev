@@ -12,8 +12,9 @@ import edu.uci.ics.crawler4j.url.WebURL;
 
 public class Controller extends Thread {
 	String[] urls;
+
 	volatile boolean isRunning;
-	
+
 	public long getToplevelPages() {
 		return toplevelPages;
 	}
@@ -39,18 +40,19 @@ public class Controller extends Thread {
 	}
 
 	List<String> indexUrls;
+
 	public void run() {
 		try {
-			isRunning=true;
-			indexUrls=main(urls);
-			
+			isRunning = true;
+			indexUrls = main(urls);
+
 		} catch (Exception e) {
-			
-		}finally{
-		isRunning=false;
+
+		} finally {
+			isRunning = false;
 		}
 	}
-	
+
 	public String[] getUrls() {
 		return urls;
 	}
@@ -70,14 +72,17 @@ public class Controller extends Thread {
 	public List<String> main(String[] args) throws Exception {
 		String crawlStorageFolder = "data/crawl/root";
 		int numberOfCrawlers = 10;
-List<String> indexURLS;
+		List<String> indexURLS;
 		CrawlConfig config = new CrawlConfig();
 		config.setCrawlStorageFolder(crawlStorageFolder);
-		config.setMaxDepthOfCrawling(5);
+		config.setMaxDepthOfCrawling(-1);
 		config.setMaxPagesToFetch(-1);
 		config.setPolitenessDelay(200);
 		config.setProxyPort(0);
 		config.setProxyHost(null);
+		config.setIncludeHttpsPages(true);;
+		config.setFollowRedirects(true);
+	//	config.setResumableCrawling(true);
 
 		/*
 		 * Instantiate the controller for this crawl.
@@ -87,23 +92,26 @@ List<String> indexURLS;
 		RobotstxtConfig robotstxtConfig = new RobotstxtConfig();
 		RobotstxtServer robotstxtServer = new RobotstxtServer(robotstxtConfig,
 				pageFetcher);
-		CrawlController controller = new CrawlController(config, pageFetcher,
-				robotstxtServer);
-
+		SelfCrawlController controller = new SelfCrawlController(config,
+				pageFetcher, robotstxtServer, urls[0]);
+//		CrawlController controller = new CrawlController(config,
+//				pageFetcher, robotstxtServer);
 		/*
 		 * For each crawl, you need to add some seed urls. These are the first
 		 * URLs that are fetched and then the crawler starts following links
 		 * which are found in these pages
 		 */
-		for (String ar : args)
+		
+		for (String ar : args){
+		System.out.println("ar-"+ar);
 			controller.addSeed(ar);
-
+		}
 		/*
 		 * Start the crawl. This is a blocking operation, meaning that your code
 		 * will reach the line after this only when crawling is finished.
 		 */
 		MyCrawler myCrawler = new MyCrawler();
-		myCrawler.url_param=args[0];
+	//	myCrawler.url_param = args[0];
 		controller.start(myCrawler.getClass(), numberOfCrawlers);
 		System.out.println("Hello");
 		List<Object> crawlersLocalData = controller.getCrawlersLocalData();
@@ -122,34 +130,34 @@ List<String> indexURLS;
 		controller.shutdown();
 		System.out.println("After shutdown thread count "
 				+ Thread.activeCount());
-		indexURLS=new ArrayList<String>();
+		indexURLS = new ArrayList<String>();
 		for (Object c : crawlersLocalData) {
 			if (null != c) {
 				CrawlStat temp = (CrawlStat) c;
-				
+
 				if (null != temp.getLinks() && !temp.getLinks().isEmpty())
 					for (WebURL w : temp.getLinks()) {
-						//System.out.println("domain " + w.getDomain() + " "
-							//	+ w.getURL());
+						// System.out.println("domain " + w.getDomain() + " "
+						// + w.getURL());
 						indexURLS.add(w.getURL());
-						//if(w.get)
-						//toplevelPages
-						System.out.println("URL-"+w.getURL());
-						System.out.println("docid-"+w.getDocid());
-						System.out.println("Domain-"+w.getDomain());
-						System.out.println("subdomain"+w.getSubDomain());
-						System.out.println("getDepth-"+w.getDepth());
-						System.out.println("parentdocid-"+w.getParentDocid());
-						System.out.println("parentURL-"+w.getParentUrl());
-						if(w.getDepth()==1){
+						// if(w.get)
+						// toplevelPages
+						System.out.println("URL-" + w.getURL());
+						System.out.println("docid-" + w.getDocid());
+						System.out.println("Domain-" + w.getDomain());
+						System.out.println("subdomain" + w.getSubDomain());
+						System.out.println("getDepth-" + w.getDepth());
+						System.out.println("parentdocid-" + w.getParentDocid());
+						System.out.println("parentURL-" + w.getParentUrl());
+						if (w.getDepth() == 1) {
 							toplevelPages++;
 						}
-						
-						
+
 					}
 			}
 		}
 		return indexURLS;
 	}
-	long toplevelPages,totalNumberofpages;
+
+	long toplevelPages, totalNumberofpages;
 }

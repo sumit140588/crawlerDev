@@ -14,6 +14,10 @@
     <display-name>CrawlerServlet</display-name>
     <servlet-name>CrawlerServlet</servlet-name>
     <servlet-class>com.crawl.CrawlerServlet</servlet-class>
+    <init-param>
+      <param-name>log4j-init-file</param-name>
+      <param-value>WEB-INF/classes/log4j.properties</param-value>
+    </init-param>    
   </servlet>
   <servlet-mapping>
     <servlet-name>CrawlerServlet</servlet-name>
