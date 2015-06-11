@@ -57,8 +57,8 @@ public class Controller extends Thread {
 List<String> indexURLS;
 		CrawlConfig config = new CrawlConfig();
 		config.setCrawlStorageFolder(crawlStorageFolder);
-		config.setMaxDepthOfCrawling(1);
-		config.setMaxPagesToFetch(50);
+		config.setMaxDepthOfCrawling(5);
+		config.setMaxPagesToFetch(1000);
 		config.setPolitenessDelay(200);
 		config.setProxyPort(0);
 		config.setProxyHost(null);
