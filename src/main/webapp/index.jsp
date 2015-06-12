@@ -1,3 +1,5 @@
+<%@page import="java.util.Iterator"%>
+<%@page import="java.util.Set"%>
 <%@page import="java.util.List"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
@@ -15,10 +17,10 @@
 			type="submit" value="gotoindex"> <br />URLs:<br/>
 	</form>
 	<%
-		List<String> urls = null;
+		Set<String> urls = null;
 		Object o = request.getAttribute("indexURLs");
-		if (o instanceof List<?>)
-			urls = (List<String>) o;
+		if (o instanceof Set<?>)
+			urls = (Set<String>) o;
 		Long toplevelPage = (Long) request.getAttribute("topLevelPage");
 
 		if (null != urls) {
@@ -29,26 +31,28 @@
 					+ urls.size()+"<br/>");
 			out.println("Total Number of links including external links --"
 					+ (Long)request.getAttribute("totalPage")+"</br/>");
-			for (String url : urls)
-				out.println(url + "<br/>");
+			Iterator<String> iterator=urls.iterator();
+			while (iterator.hasNext())
+				out.println(iterator.next() + "<br/>");
 			out.flush();
 
 		} else {
 
 		}
 		out.println("<b>External URLs</b>");
-		List<String> exturls = null;
+		Set<String> exturls = null;
 		Object exto = request.getAttribute("externalURLs");
-		if (exto instanceof List<?>)
-			exturls = (List<String>) exto;
+		if (exto instanceof Set<?>)
+			exturls = (Set<String>) exto;
 		
 
 		if (null != exturls) {
 			
 			out.println("Total Number of external pages--"
 					+ exturls.size());
-			for (String url : exturls)
-				out.println(url + "<br/>");
+			Iterator<String> iterator=exturls.iterator();
+			while (iterator.hasNext())
+				out.println(iterator.next() + "<br/>");
 			out.flush();
 
 		} else {

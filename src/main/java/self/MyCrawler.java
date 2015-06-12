@@ -72,7 +72,7 @@ public class MyCrawler extends WebCrawler {
 				|| externalLinks.size() == 0) {
 			externalLinks = new ArrayList<WebURL>();
 		}
-		if (!FILTERS.matcher(href).matches() && !pUrl.getURL().startsWith(controller.getReqURL())) {
+		if (!FILTERS.matcher(href).matches() && !pUrl.getURL().substring(pUrl.getURL().indexOf(":")).startsWith(controller.getReqURL().substring(controller.getReqURL().indexOf(":")))) {
 			externalLinks.add(pUrl);
 			cCrawlStat.setExternalLinks(externalLinks);
 			System.out.println("External link size "+cCrawlStat.getExternalLinks().size());

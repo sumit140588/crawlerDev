@@ -3,6 +3,7 @@ package com.crawl;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -55,8 +56,8 @@ public class CrawlerServlet extends HttpServlet {
 			String run = (String) pReq.getSession().getAttribute("run");
 			System.out.println("RUn VALUE-" + run);
 			try {
-				List<String> indexURLs = null;
-				List<String> externalURLs = null;
+				Set<String> indexURLs = null;
+				Set<String> externalURLs = null;
 
 				Controller c;
 				Controller Controller_param = (Controller) pReq.getSession()

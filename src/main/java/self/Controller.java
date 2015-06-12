@@ -2,6 +2,8 @@ package self;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
 import edu.uci.ics.crawler4j.crawler.CrawlController;
@@ -39,14 +41,25 @@ public class Controller extends Thread {
 		this.isRunning = isRunning;
 	}
 
-	List<String> indexUrls;
-	List<String> externalURls;
+	Set<String> indexUrls;
+	Set<String> externalURls;
 
-	public List<String> getExternalURls() {
+	
+	
+
+	public Set<String> getIndexUrls() {
+		return indexUrls;
+	}
+
+	public void setIndexUrls(Set<String> indexUrls) {
+		this.indexUrls = indexUrls;
+	}
+
+	public Set<String> getExternalURls() {
 		return externalURls;
 	}
 
-	public void setExternalURls(List<String> externalURls) {
+	public void setExternalURls(Set<String> externalURls) {
 		this.externalURls = externalURls;
 	}
 
@@ -70,28 +83,22 @@ public class Controller extends Thread {
 		this.urls = urls;
 	}
 
-	public List<String> getIndexUrls() {
-		return indexUrls;
-	}
+	
 
-	public void setIndexUrls(List<String> indexUrls) {
-		this.indexUrls = indexUrls;
-	}
-
-	public List<String> main(String[] args) throws Exception {
+	public Set<String> main(String[] args) throws Exception {
 		String crawlStorageFolder = "data/crawl/root";
 		int numberOfCrawlers = 50;
-		List<String> indexURLS;
+		Set<String> indexURLS;
 		CrawlConfig config = new CrawlConfig();
 		config.setCrawlStorageFolder(crawlStorageFolder);
-		config.setMaxDepthOfCrawling(-1);
-		config.setMaxPagesToFetch(-1);
+		config.setMaxDepthOfCrawling(3);
+		config.setMaxPagesToFetch(50);
 		config.setPolitenessDelay(200);
 		config.setProxyPort(0);
 		config.setProxyHost(null);
 		config.setIncludeHttpsPages(true);;
 		config.setFollowRedirects(true);
-	//	config.setResumableCrawling(true);
+		//config.setResumableCrawling(true);
 
 		/*
 		 * Instantiate the controller for this crawl.
@@ -139,8 +146,8 @@ public class Controller extends Thread {
 		controller.shutdown();
 		System.out.println("After shutdown thread count "
 				+ Thread.activeCount());
-		indexURLS = new ArrayList<String>();
-		externalURls= new ArrayList<String>();
+		indexURLS = new TreeSet<String>();
+		externalURls= new TreeSet<String>();
 		for (Object c : crawlersLocalData) {
 			if (null != c) {
 				CrawlStat temp = (CrawlStat) c;
