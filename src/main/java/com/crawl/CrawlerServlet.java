@@ -31,14 +31,15 @@ public class CrawlerServlet extends HttpServlet {
 
 	@Override
 	public void init() throws ServletException {
-		String prefix =  getServletContext().getRealPath("/");
-	    String file = getInitParameter("log4j-init-file");
-	    // if the log4j-init-file is not set, then no point in trying
-	    if(file != null) {
-	      PropertyConfigurator.configure(prefix+file);
-	    }
+		String prefix = getServletContext().getRealPath("/");
+		String file = getInitParameter("log4j-init-file");
+		// if the log4j-init-file is not set, then no point in trying
+		if (file != null) {
+			PropertyConfigurator.configure(prefix + file);
+		}
 		super.init();
 	}
+
 	@Override
 	protected void doGet(HttpServletRequest pReq, HttpServletResponse pResp)
 			throws ServletException, IOException {
@@ -55,6 +56,7 @@ public class CrawlerServlet extends HttpServlet {
 			System.out.println("RUn VALUE-" + run);
 			try {
 				List<String> indexURLs = null;
+				List<String> externalURLs = null;
 
 				Controller c;
 				Controller Controller_param = (Controller) pReq.getSession()
@@ -83,7 +85,7 @@ public class CrawlerServlet extends HttpServlet {
 				if (!c.isRunning() && (null == run || run.isEmpty())) {
 					// t.setDaemon(true);
 
-					 System.out.println("aaya");
+					System.out.println("aaya");
 					pReq.getSession().setAttribute("contolerObject", c);
 					pReq.getSession().setAttribute("thread", t);
 					pReq.getSession().setAttribute("run", "end");
@@ -100,6 +102,7 @@ public class CrawlerServlet extends HttpServlet {
 						System.out.println("Null Check "
 								+ (c.getIndexUrls().size()));
 						indexURLs = c.getIndexUrls();
+						externalURLs = c.getExternalURls();
 						pReq.setAttribute("topLevelPage", c.getToplevelPages());
 						pReq.getSession().setAttribute("run", null);
 					}
@@ -110,13 +113,16 @@ public class CrawlerServlet extends HttpServlet {
 					pReq.setAttribute("indexURLs", indexURLs);
 
 				}
+				if (null != externalURLs && !externalURLs.isEmpty()) {
+					pReq.setAttribute("externalURLs", externalURLs);
+				}
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
+
 			pReq.setAttribute("a", pReq.getParameter("url"));
-		
+
 		}
 		pReq.getRequestDispatcher("/index.jsp").forward(pReq, pResp);
 

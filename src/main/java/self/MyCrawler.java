@@ -60,13 +60,23 @@ public class MyCrawler extends WebCrawler {
 		// )
 		// System.out.println((!FILTERS.matcher(href).matches()
 		// )+" href " + href);
-		 SelfCrawlController controller=(SelfCrawlController)
-		 getMyController();
+		SelfCrawlController controller = (SelfCrawlController) getMyController();
 
-		 System.out.println("check instance "+(getMyController() instanceof SelfCrawlController)+"  -"+pUrl.getDomain()+"should visit"+
-		 url_param+"  reqURL "+controller.getReqURL());
-		System.out.println(controller.getReqURL().contains(pUrl.getDomain()));
-		return (!FILTERS.matcher(href).matches() && controller.getReqURL().contains(pUrl.getDomain())) ;
+		System.out.println("check instance "
+				+ (getMyController() instanceof SelfCrawlController) + "  -"
+				+ pUrl.getDomain() + "should visit" +href+ "-req url"
+				+ controller.getReqURL());
+		System.out.println(!FILTERS.matcher(href).matches() && pUrl.getURL().startsWith(controller.getReqURL()));
+		List<WebURL> externalLinks = cCrawlStat.getExternalLinks();
+		if (null == externalLinks || externalLinks.isEmpty()
+				|| externalLinks.size() == 0) {
+			externalLinks = new ArrayList<WebURL>();
+		}
+		if (!FILTERS.matcher(href).matches()) {
+			externalLinks.add(pUrl);
+		}
+		return (!FILTERS.matcher(href).matches() && pUrl.getURL().startsWith(
+				controller.getReqURL()));
 
 	}
 

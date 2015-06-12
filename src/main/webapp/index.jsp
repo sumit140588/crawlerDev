@@ -10,29 +10,48 @@
 <body>
 	hi
 	<form action="CrawlerServlet">
-		URLS: <input type="text" name="url" value="http://www.ics.uci.edu/~lopes/" />
-		<br />
-		<input type="submit" value="gotoindex"> <br/>URLs:<br />
-		<%
-			List<String> urls = (List<String>) request
-					.getAttribute("indexURLs");
-			Long toplevelPage = (Long) request.getAttribute("topLevelPage");
-
-			if (null != urls) {
-				if (null != toplevelPage)
-					out.println("Number of pages at top level Hierarchy--"
-							+ toplevelPage);
-				out.println("Total Number of pages in Hierarchy--"
-						+ urls.size());
-				for (String url : urls)
-					out.println(url + "<br/>");
-				out.flush();
-
-			} else {
-
-			}
-		%>
-
+		URLS: <input type="text" name="url"
+			value="http://www.ics.uci.edu/~lopes/" /> <br /> <input
+			type="submit" value="gotoindex"> <br />URLs:<br />
 	</form>
+	<%
+		List<String> urls = null;
+		Object o = request.getAttribute("indexURLs");
+		if (o instanceof List<?>)
+			urls = (List<String>) o;
+		Long toplevelPage = (Long) request.getAttribute("topLevelPage");
+
+		if (null != urls) {
+			if (null != toplevelPage)
+				out.println("Number of pages at top level Hierarchy--"
+						+ toplevelPage);
+			out.println("Total Number of pages in Hierarchy--"
+					+ urls.size());
+			for (String url : urls)
+				out.println(url + "<br/>");
+			out.flush();
+
+		} else {
+
+		}
+		out.println("<b>External URLs</b>");
+		List<String> exturls = null;
+		Object exto = request.getAttribute("externalURLs");
+		if (exto instanceof List<?>)
+			exturls = (List<String>) exto;
+		
+
+		if (null != exturls) {
+			
+			out.println("Total Number of external pages--"
+					+ exturls.size());
+			for (String url : exturls)
+				out.println(url + "<br/>");
+			out.flush();
+
+		} else {
+
+		}
+	%>
 </body>
 </html>

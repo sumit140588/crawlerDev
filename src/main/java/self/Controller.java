@@ -40,6 +40,15 @@ public class Controller extends Thread {
 	}
 
 	List<String> indexUrls;
+	List<String> externalURls;
+
+	public List<String> getExternalURls() {
+		return externalURls;
+	}
+
+	public void setExternalURls(List<String> externalURls) {
+		this.externalURls = externalURls;
+	}
 
 	public void run() {
 		try {
@@ -71,7 +80,7 @@ public class Controller extends Thread {
 
 	public List<String> main(String[] args) throws Exception {
 		String crawlStorageFolder = "data/crawl/root";
-		int numberOfCrawlers = 10;
+		int numberOfCrawlers = 50;
 		List<String> indexURLS;
 		CrawlConfig config = new CrawlConfig();
 		config.setCrawlStorageFolder(crawlStorageFolder);
@@ -131,31 +140,41 @@ public class Controller extends Thread {
 		System.out.println("After shutdown thread count "
 				+ Thread.activeCount());
 		indexURLS = new ArrayList<String>();
+		externalURls= new ArrayList<String>();
 		for (Object c : crawlersLocalData) {
 			if (null != c) {
 				CrawlStat temp = (CrawlStat) c;
-
-				if (null != temp.getLinks() && !temp.getLinks().isEmpty())
-					for (WebURL w : temp.getLinks()) {
-						// System.out.println("domain " + w.getDomain() + " "
-						// + w.getURL());
-						indexURLS.add(w.getURL());
-						// if(w.get)
-						// toplevelPages
-						System.out.println("URL-" + w.getURL());
-						System.out.println("docid-" + w.getDocid());
-						System.out.println("Domain-" + w.getDomain());
-						System.out.println("subdomain" + w.getSubDomain());
-						System.out.println("getDepth-" + w.getDepth());
-						System.out.println("parentdocid-" + w.getParentDocid());
-						System.out.println("parentURL-" + w.getParentUrl());
-						if (w.getDepth() == 1) {
-							toplevelPages++;
-						}
-
-					}
+				List<WebURL> tempLinks=temp.getLinks();
+				indexURLS=extractLinks( tempLinks);
+				
+				externalURls=extractLinks(temp.getExternalLinks());
+				
 			}
 		}
+		return indexURLS;
+	}
+
+	private List<String> extractLinks( List<WebURL> tempLinks) {
+		List<String> indexURLS=new ArrayList<String>();
+		if (null !=  tempLinks&& !tempLinks.isEmpty())
+			for (WebURL w : tempLinks) {
+				// System.out.println("domain " + w.getDomain() + " "
+				// + w.getURL());
+				indexURLS.add(w.getURL());
+				// if(w.get)
+				// toplevelPages
+				System.out.println("URL-" + w.getURL());
+				System.out.println("docid-" + w.getDocid());
+				System.out.println("Domain-" + w.getDomain());
+				System.out.println("subdomain" + w.getSubDomain());
+				System.out.println("getDepth-" + w.getDepth());
+				System.out.println("parentdocid-" + w.getParentDocid());
+				System.out.println("parentURL-" + w.getParentUrl());
+				if (w.getDepth() == 1) {
+					toplevelPages++;
+				}
+
+			}
 		return indexURLS;
 	}
 

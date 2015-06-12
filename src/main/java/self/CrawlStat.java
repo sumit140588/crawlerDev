@@ -10,6 +10,7 @@ public class CrawlStat {
 	  private long totalLinks;
 	  private long totalTextSize;
 	  List<WebURL> links;
+	  List<WebURL> externalLinks;
 	  Map<WebURL,String> indexableData;
 	  
 	  
@@ -77,4 +78,13 @@ public class CrawlStat {
 	  public void incTotalTextSize(int count) {
 	    this.totalTextSize += count;
 	  }
+
+	public List<WebURL> getExternalLinks() {
+		return externalLinks;
+	}
+
+	public void setExternalLinks(List<WebURL> externalLinks) {
+		this.externalLinks = externalLinks;
+	}
+	  
 	}
