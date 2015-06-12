@@ -84,8 +84,8 @@ public class Controller extends Thread {
 		List<String> indexURLS;
 		CrawlConfig config = new CrawlConfig();
 		config.setCrawlStorageFolder(crawlStorageFolder);
-		config.setMaxDepthOfCrawling(-1);
-		config.setMaxPagesToFetch(-1);
+		config.setMaxDepthOfCrawling(3);
+		config.setMaxPagesToFetch(1000);
 		config.setPolitenessDelay(200);
 		config.setProxyPort(0);
 		config.setProxyHost(null);
@@ -145,9 +145,9 @@ public class Controller extends Thread {
 			if (null != c) {
 				CrawlStat temp = (CrawlStat) c;
 				List<WebURL> tempLinks=temp.getLinks();
-				indexURLS=extractLinks( tempLinks);
+				indexURLS.addAll(extractLinks( tempLinks));
 				
-				externalURls=extractLinks(temp.getExternalLinks());
+				externalURls.addAll(extractLinks(temp.getExternalLinks()));
 				
 			}
 		}

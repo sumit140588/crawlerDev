@@ -73,7 +73,7 @@ public class CrawlerServlet extends HttpServlet {
 
 				Thread t;
 				Thread Thread_param = (Thread) pReq.getSession().getAttribute(
-						"contolerObject");
+						"thread");
 				if (null == Thread_param) {
 					t = new Thread(c, "controlerThread");
 				} else {
@@ -90,7 +90,7 @@ public class CrawlerServlet extends HttpServlet {
 					pReq.getSession().setAttribute("thread", t);
 					pReq.getSession().setAttribute("run", "end");
 					pResp.setIntHeader("Refresh", 5);
-
+					if(!t.isAlive())
 					t.start();
 					System.out.println("check " + c.isRunning());
 					// pResp.getWriter().append("<meta http-equiv=\"refresh\" content=\"5; URL=#\">");
@@ -104,18 +104,24 @@ public class CrawlerServlet extends HttpServlet {
 						indexURLs = c.getIndexUrls();
 						externalURLs = c.getExternalURls();
 						pReq.setAttribute("topLevelPage", c.getToplevelPages());
+						
 						pReq.getSession().setAttribute("run", null);
+						pReq.getSession().setAttribute("contolerObject",null);
+						pReq.getSession().setAttribute("thread", null);
 					}
 
 				}
+				long totalPage=0;
 				if (null != indexURLs && !indexURLs.isEmpty()) {
 					System.out.println("index url count " + indexURLs.size());
 					pReq.setAttribute("indexURLs", indexURLs);
-
+					totalPage+=indexURLs.size();
 				}
 				if (null != externalURLs && !externalURLs.isEmpty()) {
 					pReq.setAttribute("externalURLs", externalURLs);
+					totalPage+=externalURLs.size();
 				}
+				pReq.setAttribute("totalPage", totalPage);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

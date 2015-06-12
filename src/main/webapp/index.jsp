@@ -12,7 +12,7 @@
 	<form action="CrawlerServlet">
 		URLS: <input type="text" name="url"
 			value="http://www.ics.uci.edu/~lopes/" /> <br /> <input
-			type="submit" value="gotoindex"> <br />URLs:<br />
+			type="submit" value="gotoindex"> <br />URLs:<br/>
 	</form>
 	<%
 		List<String> urls = null;
@@ -23,10 +23,12 @@
 
 		if (null != urls) {
 			if (null != toplevelPage)
-				out.println("Number of pages at top level Hierarchy--"
-						+ toplevelPage);
-			out.println("Total Number of pages in Hierarchy--"
-					+ urls.size());
+				out.println("Number of links at top level Hierarchy--"
+						+ toplevelPage+"<br/>");
+			out.println("Total Number of links in Hierarchy--"
+					+ urls.size()+"<br/>");
+			out.println("Total Number of links including external links --"
+					+ (Long)request.getAttribute("totalPage")+"</br/>");
 			for (String url : urls)
 				out.println(url + "<br/>");
 			out.flush();
