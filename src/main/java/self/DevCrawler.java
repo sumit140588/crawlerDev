@@ -2,21 +2,16 @@ package self;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Pattern;
-
-import javax.servlet.annotation.WebInitParam;
 
 import org.apache.log4j.Logger;
 
 import edu.uci.ics.crawler4j.crawler.Page;
 import edu.uci.ics.crawler4j.crawler.WebCrawler;
-import edu.uci.ics.crawler4j.frontier.Frontier;
-import edu.uci.ics.crawler4j.parser.HtmlParseData;
 import edu.uci.ics.crawler4j.url.WebURL;
 
-public class MyCrawler extends WebCrawler {
-	static final Logger logger = Logger.getLogger(MyCrawler.class.getName());
+public class DevCrawler extends WebCrawler {
+	static final Logger logger = Logger.getLogger(DevCrawler.class.getName());
 	private final static Pattern FILTERS = Pattern
 			.compile(".*(\\.(css|js|bmp|svg|gif|jpe?g"
 					+ "|png|tiff?|mid|mp2|mp3|mp4"
@@ -28,7 +23,7 @@ public class MyCrawler extends WebCrawler {
 	CrawlStat cCrawlStat;
 	String url_param;
 
-	public MyCrawler() {
+	public DevCrawler() {
 
 		cCrawlStat = new CrawlStat();
 		cCrawlStat.setLinks(new ArrayList<WebURL>());
@@ -46,7 +41,7 @@ public class MyCrawler extends WebCrawler {
 	 */
 	public boolean shouldVisit(Page referringPage, WebURL url) {
 		String href = url.getURL().toLowerCase();
-		System.out.println(referringPage.getWebURL().getURL()
+		logger.info(referringPage.getWebURL().getURL()
 				+ "l;;;;;;;;;;;;;;;");
 		return !FILTERS.matcher(href).matches()
 				&& href.startsWith("http://www.ics.uci.edu/");
@@ -58,24 +53,31 @@ public class MyCrawler extends WebCrawler {
 		String href = pUrl.getURL().toLowerCase();
 		// if(!FILTERS.matcher(href).matches()
 		// )
-		// System.out.println((!FILTERS.matcher(href).matches()
+		// logger.info((!FILTERS.matcher(href).matches()
 		// )+" href " + href);
-		SelfCrawlController controller = (SelfCrawlController) getMyController();
+		DevCrawlController controller = (DevCrawlController) getMyController();
 
-		System.out.println("check instance "
-				+ (getMyController() instanceof SelfCrawlController) + "  -"
-				+ pUrl.getDomain() + "should visit" +href+ "-req url"
+		logger.info("check instance "
+				+ (getMyController() instanceof DevCrawlController) + "  -"
+				+ pUrl.getDomain() + "should visit" + href + "-req url"
 				+ controller.getReqURL());
-		System.out.println(!FILTERS.matcher(href).matches() && pUrl.getURL().startsWith(controller.getReqURL()));
+		logger.info(!FILTERS.matcher(href).matches()
+				&& pUrl.getURL().startsWith(controller.getReqURL()));
 		List<WebURL> externalLinks = cCrawlStat.getExternalLinks();
 		if (null == externalLinks || externalLinks.isEmpty()
 				|| externalLinks.size() == 0) {
 			externalLinks = new ArrayList<WebURL>();
 		}
-		if (!FILTERS.matcher(href).matches() && !pUrl.getURL().substring(pUrl.getURL().indexOf(":")).startsWith(controller.getReqURL().substring(controller.getReqURL().indexOf(":")))) {
+		if (!FILTERS.matcher(href).matches()
+				&& !pUrl.getURL()
+						.substring(pUrl.getURL().indexOf(":"))
+						.startsWith(
+								controller.getReqURL().substring(
+										controller.getReqURL().indexOf(":")))) {
 			externalLinks.add(pUrl);
 			cCrawlStat.setExternalLinks(externalLinks);
-			System.out.println("External link size "+cCrawlStat.getExternalLinks().size());
+			logger.info("External link size "
+					+ cCrawlStat.getExternalLinks().size());
 		}
 		return (!FILTERS.matcher(href).matches() && pUrl.getURL().startsWith(
 				controller.getReqURL()));
@@ -98,43 +100,22 @@ public class MyCrawler extends WebCrawler {
 		cCrawlStat.incProcessedPages();
 
 		String url = page.getWebURL().getURL();
-		System.out.println("URL: " + url + " ->> " + (++count));
+		logger.info("URL: " + url + " ->> " + (++count));
 		List<WebURL> links;
-		Map<WebURL, String> indexableData;
+		// Map<WebURL, String> indexableData;
 		links = cCrawlStat.getLinks();
-		if (null != cCrawlStat.getIndexableData()) {
-			indexableData = cCrawlStat.getIndexableData(); // =
-															// htmlParseData.getOutgoingUrls();
-		} else {
-			// links = new ArrayList<WebURL>();
+		if (null == links) {
+			links = new ArrayList<WebURL>();
 		}
 		links.add(page.getWebURL());
 
 		cCrawlStat.setLinks(links);
-		if (page.getParseData() instanceof HtmlParseData) {
-			HtmlParseData htmlParseData = (HtmlParseData) page.getParseData();
-			String text = htmlParseData.getText();
-			String html = htmlParseData.getHtml();
-
-			// cCrawlStat.incTotalLinks(links.size());
-
-			System.out.println("link Size " + cCrawlStat.getTotalLinks());
-			// System.out.println("Text length: " + text.length());
-			// System.out.println("Html length: " + html);
-			// System.out.println("Number of outgoing links: " + links.size());
-			// logger.info("Text length: " + text.length());
-			// logger.info("Html length: " + html);
-			// logger.info("Number of outgoing links: " + links.size());
-			// for (WebURL webURL : links) {
-			// logger.info(webURL.getURL());
-			// logger.info(webURL.getAnchor());
-			// }
-		}
+		
 	}
 
 	@Override
 	public void run() {
-		// System.out.println("RunCallled");
+		// logger.info("RunCallled");
 		super.run();
 	}
 

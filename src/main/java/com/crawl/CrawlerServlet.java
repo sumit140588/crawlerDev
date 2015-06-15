@@ -1,130 +1,116 @@
 package com.crawl;
 
 import java.io.IOException;
-import java.util.Calendar;
-import java.util.List;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.PropertyConfigurator;
 
 import self.Controller;
-import self.MyCrawler;
-import ucar.nc2.ft.fmrc.TimeInventory;
-import edu.uci.ics.crawler4j.crawler.CrawlConfig;
-import edu.uci.ics.crawler4j.crawler.CrawlController;
-import edu.uci.ics.crawler4j.fetcher.PageFetcher;
-import edu.uci.ics.crawler4j.robotstxt.RobotstxtConfig;
-import edu.uci.ics.crawler4j.robotstxt.RobotstxtServer;
 
+/**
+ * The Class CrawlerServlet. this class is used to handle the crawler form
+ * request for url and process the request to fetch the links and send as
+ * response.
+ */
 public class CrawlerServlet extends HttpServlet {
 
-	/**
-	 * 
-	 */
+	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 1L;
 
+	/* this method is initialize the logger.
+	 * (non-Javadoc)
+	 * 
+	 * @see javax.servlet.GenericServlet#init()
+	 */
 	@Override
 	public void init() throws ServletException {
 		String prefix = getServletContext().getRealPath("/");
 		String file = getInitParameter("log4j-init-file");
-		// if the log4j-init-file is not set, then no point in trying
 		if (file != null) {
 			PropertyConfigurator.configure(prefix + file);
 		}
 		super.init();
 	}
 
+	/*
+	 * handle the get request.
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest
+	 * , javax.servlet.http.HttpServletResponse)
+	 */
 	@Override
 	protected void doGet(HttpServletRequest pReq, HttpServletResponse pResp)
 			throws ServletException, IOException {
-		Pattern p = Pattern
-				.compile("(@)?(href=')?(HREF=')?(HREF=\")?(href=\")?(http://)?[a-zA-Z_0-9\\-]+(\\.\\w[a-zA-Z_0-9\\-]+)+(/[#&\\n\\-=?\\+\\%/\\.\\w]+)?");
 		String url_param = pReq.getParameter("url");
 		if (null != url_param && !url_param.isEmpty()) {
 			String[] urls = url_param.split(",");
-			Matcher m = p.matcher("your url here");
-			// System.out.println("HELOOOOOOOOOOOOOOOOOOOOOO");
-			System.out.println(url_param + " abc " + pReq.getParameter("url"));
-			long timeinmilli = Calendar.getInstance().getTimeInMillis();
-			String run = (String) pReq.getSession().getAttribute("run");
-			System.out.println("RUn VALUE-" + run);
+
+			HttpSession session = pReq.getSession();
+			String run = (String) session.getAttribute("run");
 			try {
 				Set<String> indexURLs = null;
 				Set<String> externalURLs = null;
 
 				Controller c;
-				Controller Controller_param = (Controller) pReq.getSession()
+				Controller Controller_param = (Controller) session
 						.getAttribute("contolerObject");
 				if (null == Controller_param) {
 					System.out.println("If part controler");
 					c = new Controller();
 					c.setUrls(urls);
-
 				} else {
-					System.out.println("else part controler");
 					c = Controller_param;
 				}
 
 				Thread t;
-				Thread Thread_param = (Thread) pReq.getSession().getAttribute(
-						"thread");
+				Thread Thread_param = (Thread) session.getAttribute("thread");
 				if (null == Thread_param) {
 					t = new Thread(c, "controlerThread");
 				} else {
 					t = Thread_param;
 				}
 
-				System.out.println("run value " + run);
-				System.out.println(c.isRunning());
 				if (!c.isRunning() && (null == run || run.isEmpty())) {
-					// t.setDaemon(true);
-
-					System.out.println("aaya");
-					pReq.getSession().setAttribute("contolerObject", c);
-					pReq.getSession().setAttribute("thread", t);
-					pReq.getSession().setAttribute("run", "end");
+					session.setAttribute("contolerObject", c);
+					session.setAttribute("thread", t);
+					session.setAttribute("run", "end");
 					pResp.setIntHeader("Refresh", 5);
-					if(!t.isAlive())
-					t.start();
-					System.out.println("check " + c.isRunning());
-					// pResp.getWriter().append("<meta http-equiv=\"refresh\" content=\"5; URL=#\">");
+					if (!t.isAlive())
+						t.start();
 				} else {
-					System.out.println("else part");
 					if (c.isRunning()) {
 						pResp.setIntHeader("Refresh", 5);
 					} else {
-						System.out.println("Null Check "
-								+ (c.getIndexUrls().size()));
 						indexURLs = c.getIndexUrls();
 						externalURLs = c.getExternalURls();
+						System.out.println("top level link count"
+								+ c.getToplevelPages());
 						pReq.setAttribute("topLevelPage", c.getToplevelPages());
-						
-						pReq.getSession().setAttribute("run", null);
-						pReq.getSession().setAttribute("contolerObject",null);
-						pReq.getSession().setAttribute("thread", null);
+						session.setAttribute("run", null);
+						session.setAttribute("contolerObject", null);
+						session.setAttribute("thread", null);
 					}
 
 				}
-				long totalPage=0;
+				long totalPage = 0;
 				if (null != indexURLs && !indexURLs.isEmpty()) {
-					System.out.println("index url count " + indexURLs.size());
 					pReq.setAttribute("indexURLs", indexURLs);
-					totalPage+=indexURLs.size();
+					totalPage += indexURLs.size();
 				}
 				if (null != externalURLs && !externalURLs.isEmpty()) {
 					pReq.setAttribute("externalURLs", externalURLs);
-					totalPage+=externalURLs.size();
+					totalPage += externalURLs.size();
 				}
 				pReq.setAttribute("totalPage", totalPage);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
@@ -135,44 +121,14 @@ public class CrawlerServlet extends HttpServlet {
 
 		return;
 	}
-
-	public void callCaller() throws Exception {
-		String crawlStorageFolder = "/data/crawl/root";
-		int numberOfCrawlers = 7;
-
-		CrawlConfig config = new CrawlConfig();
-		config.setCrawlStorageFolder(crawlStorageFolder);
-		config.setMaxDepthOfCrawling(0);
-		config.setMaxPagesToFetch(1);
-		config.setPolitenessDelay(200);
-
-		/*
-		 * Instantiate the controller for this crawl.
-		 */
-		PageFetcher pageFetcher = new PageFetcher(config);
-		RobotstxtConfig robotstxtConfig = new RobotstxtConfig();
-		RobotstxtServer robotstxtServer = new RobotstxtServer(robotstxtConfig,
-				pageFetcher);
-		CrawlController controller = new CrawlController(config, pageFetcher,
-				robotstxtServer);
-
-		/*
-		 * For each crawl, you need to add some seed urls. These are the first
-		 * URLs that are fetched and then the crawler starts following links
-		 * which are found in these pages
-		 */
-		controller.addSeed("http://www.ics.uci.edu/~lopes/");
-		// controller.addSeed("http://www.ics.uci.edu/~welling/");
-		// controller.addSeed("http://www.ics.uci.edu/");
-
-		/*
-		 * Start the crawl. This is a blocking operation, meaning that your code
-		 * will reach the line after this only when crawling is finished.
-		 */
-		controller.start(MyCrawler.class, numberOfCrawlers);
-		System.out.println("Hello");
-		List<Object> crawlersLocalData = controller.getCrawlersLocalData();
-		System.out.println("Crawller Servlet ->" + crawlersLocalData.size());
-
-	}
+ 
+ /* (non-Javadoc)
+  * handle the post method.
+  * @see javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+  */
+ @Override
+protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+		throws ServletException, IOException {
+doGet(req,resp);
+}
 }
